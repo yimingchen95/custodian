@@ -22,8 +22,7 @@ FEFF_BACKUP_FILES = ["ATOMS", "HEADER", "PARAMETERS", "POTENTIALS", "feff.inp", 
 logger = logging.getLogger(__name__)
 
 
-
-class KedgeUnConvergedError(ErrorHandler):
+class KedgeUnconvergedError(ErrorHandler):
     """
     Correct the unconverged error of FEFF's SCF calculation.
     For K-edge calculation only.
@@ -120,6 +119,7 @@ class KedgeUnConvergedError(ErrorHandler):
         # Unfixable error. Just return None for actions.
         else:
             return {"errors": ["Non-converging job"], "actions": None}
+
 
 class LedgeUnconvergedError(ErrorHandler):
     """
