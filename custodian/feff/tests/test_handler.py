@@ -14,7 +14,7 @@ import os
 import glob
 import shutil
 
-from custodian.feff.handlers import UnconvergedErrorHandler
+from custodian.feff.handlers import KedgeUnconvergedError,LedgeUnconvergedError
 
 test_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..",
                         "test_files")
@@ -25,10 +25,10 @@ def clean_dir():
         os.remove(f)
 
 
-class UnconvergedErrorHandlerTest(unittest.TestCase):
+class KedgeUnconvergedErrorTest(unittest.TestCase):
     def setUp(cls):
         os.chdir(test_dir)
-        subdir = os.path.join(test_dir, "feff_unconverge")
+        subdir = os.path.join(test_dir, "feff_unconverge/K_edge")
         os.chdir(subdir)
         shutil.copy("ATOMS", "ATOMS.orig")
         shutil.copy("PARAMETERS", "PARAMETERS.orig")
@@ -38,7 +38,7 @@ class UnconvergedErrorHandlerTest(unittest.TestCase):
         shutil.copy("log1.dat", "log1.dat.orig")
 
     def test_check_unconverged(self):
-        h = UnconvergedErrorHandler()
+        h = KedgeUnconvergedError()
         self.assertTrue(h.check())
         d = h.correct()
         self.assertEqual(d["errors"], ["Non-converging job"])
@@ -46,6 +46,34 @@ class UnconvergedErrorHandlerTest(unittest.TestCase):
                          [{"dict": "PARAMETERS",
                            "action": {"_set": {"RESTART": []}}},
                           {'action': {'_set': {'SCF': [7, 0, 100, 0.2, 3]}},
+                           'dict': 'PARAMETERS'}])
+        shutil.move("ATOMS.orig", "ATOMS")
+        shutil.move("PARAMETERS.orig", "PARAMETERS")
+        shutil.move("HEADER.orig", "HEADER")
+        shutil.move("POTENTIALS.orig", "POTENTIALS")
+        shutil.move("feff.inp.orig", "feff.inp")
+        shutil.move("log1.dat.orig", "log1.dat")
+        clean_dir()
+
+class LedgeUnconvergedErrorTest(unittest.TestCase):
+    def setUp(cls):
+        os.chdir(test_dir)
+        subdir = os.path.join(test_dir, "feff_unconverge/L_edge")
+        os.chdir(subdir)
+        shutil.copy("ATOMS", "ATOMS.orig")
+        shutil.copy("PARAMETERS", "PARAMETERS.orig")
+        shutil.copy("HEADER", "HEADER.orig")
+        shutil.copy("POTENTIALS", "POTENTIALS.orig")
+        shutil.copy("feff.inp", "feff.inp.orig")
+        shutil.copy("log1.dat", "log1.dat.orig")
+
+    def test_check_unconverged(self):
+        h = LedgeUnconvergedError()
+        self.assertTrue(h.check())
+        d = h.correct()
+        self.assertEqual(d["errors"], ["Non-converging job"])
+        self.assertEqual(d['actions'],
+                         [{'action': {'_set': {'SCF': [7.0, 0, 100, 0.1, 3]}},
                            'dict': 'PARAMETERS'}])
         shutil.move("ATOMS.orig", "ATOMS")
         shutil.move("PARAMETERS.orig", "PARAMETERS")
