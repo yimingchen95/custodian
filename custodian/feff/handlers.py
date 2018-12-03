@@ -151,7 +151,8 @@ class LedgeUnconvergedError(ErrorHandler):
         # Process the output file and get converge information
         not_converge_pattern = re.compile(r"(Convergence not reached."
                                           r"|FRNRM Could not integrate enough charge"
-                                          r"|Fatal error)")
+                                          r"|Fatal error"
+                                          r"|Bad counts)")
         converge_pattern = re.compile("Convergence reached.*")
         for _, line in enumerate(open(self.output_filename)):
             if len(not_converge_pattern.findall(line)) > 0:
